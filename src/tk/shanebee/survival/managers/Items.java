@@ -70,6 +70,7 @@ public enum Items {
     STONE_SICKLE(Material.WOODEN_HOE, 2),
     IRON_SICKLE(Material.WOODEN_HOE, 3),
     GRAPPLING_HOOK(Material.FISHING_ROD, 1),
+    ROCK(Material.STICK, 1),
 
     // TODO Experimental
     PERSISTENT_TORCH(Material.TORCH, 1);
@@ -729,7 +730,14 @@ public enum Items {
                 p_torch_meta.setLore(Collections.singletonList(ChatColor.AQUA + "Persistent"));
                 persistent_torch.setItemMeta(p_torch_meta);
                 return persistent_torch;
-
+            case ROCK:
+                // TODO Experimental
+                ItemStack rock = new ItemStack(ROCK.materialType);
+                ItemMeta rock_meta = rock.getItemMeta();
+                rock_meta.setCustomModelData(ROCK.modelData);
+                rock_meta.setDisplayName(ChatColor.RESET + "Rock");
+                rock.setItemMeta(rock_meta);
+                return rock;
             default:
                 return new ItemStack(Material.AIR);
         }

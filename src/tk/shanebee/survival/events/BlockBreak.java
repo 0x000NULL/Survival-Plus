@@ -237,9 +237,20 @@ public class BlockBreak implements Listener {
 							event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.STICK));
 					}
 				}
+				if (!event.isCancelled()) {
+					if (material == Material.STONE) {
+						event.setDropItems(false);
+						stoneDropsRocks(event.getBlock().getLocation());
+					}
+				}
 			} else {
 				if (Utils.isOreBlock(material) || Utils.isNaturalOreBlock(material)) {
-					event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(material));
+					if (material == Material.STONE) {
+						event.setDropItems(false);
+						stoneDropsRocks(event.getBlock().getLocation());
+					} else {
+						event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(material));
+					}
 				}
 			}
 		}
@@ -308,6 +319,14 @@ public class BlockBreak implements Listener {
 				}
 			}
 		}
+	}
+
+	private void stoneDropsRocks(Location loc) {
+		World world = loc.getWorld();
+		assert world != null;
+		ItemStack drop = Items.get(Items.ROCK);
+		drop.setAmount(new Random().nextInt(3) + 1);
+		world.dropItemNaturally(loc, drop);
 	}
 
 }
