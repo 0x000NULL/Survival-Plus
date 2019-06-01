@@ -183,6 +183,15 @@ Mechanics:
     # If persistent torches are enabled
     PersistentTorches: true
 
+  # Add rocks to your server
+  Rocks:
+    # When true, rock based recipes are enabled
+    Enabled: true
+    # When breaking stone, rocks will drop rather than cobblestone
+    Stone-Drops-Rocks: true
+    # When breaking cobblestone, rocks will drop rather than cobblestone
+    Cobble-Drops-Rocks: true
+
 # Enables custom recipes (Overrides vanilla recipes)
 Recipes:
   Saddle: true
