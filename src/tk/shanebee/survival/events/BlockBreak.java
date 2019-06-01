@@ -5,7 +5,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +22,10 @@ import tk.shanebee.survival.util.Utils;
 import java.util.Random;
 
 public class BlockBreak implements Listener {
+
+	private boolean ROCKS = Survival.settings.getBoolean("Mechanics.Rocks.Enabled");
+	private boolean STONE_DROP_ROCKS = Survival.settings.getBoolean("Mechanics.Rocks.Stone-Drops-Rocks");
+	private boolean COBBLE_DROP_ROCKS = Survival.settings.getBoolean("Mechanics.Rocks.Cobble-Drops-Rocks");
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	private void onBlockBreak(BlockBreakEvent event) {
@@ -70,8 +76,7 @@ public class BlockBreak implements Listener {
 					}
 				}
 
-				if
-				(Survival.settings.getBoolean("Survival.BreakOnlyWith.Axe") &&
+				if (Survival.settings.getBoolean("Survival.BreakOnlyWith.Axe") &&
 						!(tool.getType() == Material.WOODEN_AXE || tool.getType() == Material.STONE_AXE
 								|| tool.getType() == Material.IRON_AXE || tool.getType() == Material.GOLDEN_AXE
 								|| tool.getType() == Material.DIAMOND_AXE)) {
@@ -97,46 +102,36 @@ public class BlockBreak implements Listener {
 						player.updateInventory();
 						player.sendMessage(ChatColor.RED + Utils.getColoredString(Survival.lang.task_must_use_axe));
 					}
-
 					//Fix half door glitch
-					if
-					(
-							Tag.DOORS.isTagged(material)
-					) {
+					if (Tag.DOORS.isTagged(material)) {
 						if (block.getRelative(BlockFace.UP).getType() == material)
 							block.getRelative(BlockFace.UP).getState().update(true);
 						if (block.getRelative(BlockFace.DOWN).getType() == material)
 							block.getRelative(BlockFace.DOWN).getState().update(true);
 					}
 				}
-				if (Survival.settings.getBoolean("Survival.BreakOnlyWith.Pickaxe") &&
-						!(tool.getType() == Material.WOODEN_PICKAXE
-								|| tool.getType() == Material.GOLDEN_PICKAXE
-								|| tool.getType() == Material.STONE_PICKAXE
-								|| tool.getType() == Material.IRON_PICKAXE
-								|| tool.getType() == Material.DIAMOND_PICKAXE)) {
+				if (Survival.settings.getBoolean("Survival.BreakOnlyWith.Pickaxe") && !(tool.getType() == Material.WOODEN_PICKAXE
+						|| tool.getType() == Material.GOLDEN_PICKAXE || tool.getType() == Material.STONE_PICKAXE
+						|| tool.getType() == Material.IRON_PICKAXE || tool.getType() == Material.DIAMOND_PICKAXE)) {
 					if (material == Material.OBSIDIAN
 							|| Utils.isOreBlock(material)
 							|| Utils.isNaturalOreBlock(material)
 							|| Utils.isNonWoodDoor(material)
 							|| Utils.isNonWoodSlab(material)
 							|| Utils.isNonWoodStairs(material)
-
 							|| Utils.isTerracotta(material)
 							|| Utils.isGlazedTerracotta(material)
 							|| Utils.isConcrete(material)
-
 							|| Utils.isStoneTypeBlock(material)
 							|| Utils.isCookingBlock(material)
-
 
 							|| Tag.WALLS.isTagged(material)
 							|| Tag.ICE.isTagged(material)
 							|| Tag.CORAL_BLOCKS.isTagged(material)
+							|| Tag.RAILS.isTagged(material)
 
 							|| material == Material.NETHER_BRICK_FENCE
 							|| material == Material.SPAWNER
-
 							|| material == Material.SEA_LANTERN
 							|| material == Material.GLOWSTONE
 							|| material == Material.END_ROD
@@ -157,10 +152,7 @@ public class BlockBreak implements Listener {
 							|| material == Material.STONE_PRESSURE_PLATE
 							|| material == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
 							|| material == Material.LIGHT_WEIGHTED_PRESSURE_PLATE
-
-							|| material == Material.BEACON
-
-							|| Tag.RAILS.isTagged(material)) {
+							|| material == Material.BEACON) {
 						event.setCancelled(true);
 						player.updateInventory();
 						player.sendMessage(ChatColor.RED + Utils.getColoredString(Survival.lang.task_must_use_pick));
@@ -168,11 +160,9 @@ public class BlockBreak implements Listener {
 				}
 
 				if (Survival.settings.getBoolean("Survival.BreakOnlyWith.Sickle")) {
-					if (material == Material.MELON
-							|| material == Material.PUMPKIN || material == Material.JACK_O_LANTERN
-							|| material == Material.MELON_STEM || material == Material.PUMPKIN_STEM
-							|| material == Material.CHORUS_FLOWER || material == Material.CARROTS
-							|| material == Material.POTATOES || material == Material.BEETROOTS
+					if (material == Material.MELON || material == Material.PUMPKIN || material == Material.JACK_O_LANTERN
+							|| material == Material.MELON_STEM || material == Material.PUMPKIN_STEM || material == Material.CHORUS_FLOWER
+							|| material == Material.CARROTS || material == Material.POTATOES || material == Material.BEETROOTS
 							|| material == Material.WHEAT || material == Material.SWEET_BERRY_BUSH) {
 
 						if (!Items.compare(tool, Items.IRON_SICKLE) && !Items.compare(tool, Items.STONE_SICKLE)) {
@@ -218,10 +208,8 @@ public class BlockBreak implements Listener {
 
 				if (!(tool.getType() == Material.SHEARS)) {
 					if (Survival.settings.getBoolean("Survival.BreakOnlyWith.Shears")) {
-						if (material == Material.COBWEB
-								|| material == Material.TRIPWIRE
-								|| material == Material.TNT
-								|| material == Material.MUSHROOM_STEM) {
+						if (material == Material.COBWEB || material == Material.TRIPWIRE
+								|| material == Material.TNT || material == Material.MUSHROOM_STEM) {
 							event.setCancelled(true);
 							player.updateInventory();
 							player.sendMessage(ChatColor.RED + Utils.getColoredString(Survival.lang.task_must_use_shear));
@@ -238,16 +226,33 @@ public class BlockBreak implements Listener {
 					}
 				}
 				if (!event.isCancelled()) {
-					if (material == Material.STONE) {
-						event.setDropItems(false);
-						stoneDropsRocks(event.getBlock().getLocation());
+					if (ROCKS && !tool.containsEnchantment(Enchantment.SILK_TOUCH)) {
+						if (STONE_DROP_ROCKS && material == Material.STONE) {
+							dropRocks(event, new Random().nextInt(3) + 1);
+						}
+						if (COBBLE_DROP_ROCKS) {
+							switch (material) {
+								case COBBLESTONE:
+								case MOSSY_COBBLESTONE:
+								case COBBLESTONE_WALL:
+								case MOSSY_COBBLESTONE_WALL:
+									dropRocks(event, 4);
+									break;
+								case COBBLESTONE_SLAB:
+								case MOSSY_COBBLESTONE_SLAB:
+									dropRocks(event, 2);
+									break;
+								case COBBLESTONE_STAIRS:
+								case MOSSY_COBBLESTONE_STAIRS:
+									dropRocks(event, 6);
+							}
+						}
 					}
 				}
 			} else {
 				if (Utils.isOreBlock(material) || Utils.isNaturalOreBlock(material)) {
 					if (material == Material.STONE) {
-						event.setDropItems(false);
-						stoneDropsRocks(event.getBlock().getLocation());
+						dropRocks(event, 4);
 					} else {
 						event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(material));
 					}
@@ -321,11 +326,13 @@ public class BlockBreak implements Listener {
 		}
 	}
 
-	private void stoneDropsRocks(Location loc) {
+	private void dropRocks(Event event, int amount) {
+		Location loc = ((BlockBreakEvent) event).getBlock().getLocation();
+		((BlockBreakEvent) event).setDropItems(false);
 		World world = loc.getWorld();
 		assert world != null;
 		ItemStack drop = Items.get(Items.ROCK);
-		drop.setAmount(new Random().nextInt(3) + 1);
+		drop.setAmount(amount);
 		world.dropItemNaturally(loc, drop);
 	}
 
