@@ -3,6 +3,7 @@ package tk.shanebee.survival.managers;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.data.BlockData;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 import tk.shanebee.survival.Survival;
@@ -755,5 +757,23 @@ public class ItemManager {
 		}
 		return false;
 	}
+
+    /** Custom system to get UUIDs from ItemStacks
+     * @param item ItemStack to grab UUID from
+     * @return UUID of item (if not set a new UUID will be added to the item)
+     */
+	public static UUID getItemUUID(ItemStack item) {
+	    if (item.getItemMeta() == null) return null;
+	    ItemMeta meta = item.getItemMeta();
+        NamespacedKey key = new NamespacedKey(Survival.getInstance(), "uuid");
+        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            String u = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+            return UUID.fromString(u);
+        }
+        UUID uuid = UUID.randomUUID();
+        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, uuid.toString());
+        item.setItemMeta(meta);
+        return uuid;
+    }
 
 }
