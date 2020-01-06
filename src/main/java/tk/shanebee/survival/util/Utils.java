@@ -38,8 +38,22 @@ public class Utils {
 	private final static ImmutableSet<Material> REQUIRES_AXE;
 	private final static ImmutableSet<Material> REQUIRES_SHEARS;
 	private final static ImmutableSet<Material> REQUIRES_HAMMER;
+	private final static ImmutableSet<Material> CAN_SMELT;
 
     static {
+        CAN_SMELT = ImmutableSet.<Material>builder()
+                .add(Material.PORKCHOP)
+                .add(Material.BEEF)
+                .add(Material.CHICKEN)
+                .add(Material.SALMON)
+                .add(Material.COD)
+                .add(Material.POTATO)
+                .add(Material.MUTTON)
+                .add(Material.RABBIT)
+                .add(Material.SAND)
+                .add(Material.CLAY_BALL)
+                .build();
+
     	CONCRETE_BLOCKS = ImmutableSet.<Material>builder()
 				.add(Material.CYAN_CONCRETE)
 				.add(Material.BLACK_CONCRETE)
@@ -613,6 +627,18 @@ public class Utils {
                 || Tag.BANNERS.isTagged(material)
                 || Tag.FENCES.isTagged(material)
                 || Tag.SIGNS.isTagged(material);
+    }
+
+    /** Check if an item can be smelted in a FireStriker
+     * @param item Item to check for smelting
+     * @return True if item can be smelted
+     */
+    public static boolean smeltCheck(ItemStack item) {
+        if (item == null)
+            return false;
+        else if (CAN_SMELT.contains(item.getType())) {
+            return true;
+        } else return Tag.LOGS.isTagged(item.getType());
     }
 
 	/** Get the drops for a certain material

@@ -1,17 +1,33 @@
 package tk.shanebee.survival.managers;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Scoreboard;
 import tk.shanebee.survival.Survival;
+import tk.shanebee.survival.config.Lang;
 import tk.shanebee.survival.config.PlayerDataConfig;
 import tk.shanebee.survival.data.Nutrient;
 import tk.shanebee.survival.data.PlayerData;
-import tk.shanebee.survival.config.Lang;
+import tk.shanebee.survival.item.FireStriker;
 import tk.shanebee.survival.util.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manager for players
@@ -26,10 +42,12 @@ public class PlayerManager implements Listener {
 
 	// Store all the active PlayerData
 	private Map<UUID, PlayerData> playerDataMap;
+	private Map<UUID, FireStriker> fireStrikerMap;
 
 	public PlayerManager(Survival plugin, Map<UUID, PlayerData> playerDataMap) {
 		this.plugin = plugin;
 		this.playerDataMap = playerDataMap;
+		this.fireStrikerMap = new HashMap<>();
 		this.lang = plugin.getLang();
 		this.url = plugin.getSurvivalConfig().RESOURCE_PACK_URL;
 		this.playerDataConfig = plugin.getPlayerDataConfig();
@@ -336,5 +354,38 @@ public class PlayerManager implements Listener {
 			playerDataConfig.createConvertedFile(c);
 		}
 	}
+
+	// FIRESTRIKER STUFF
+    public boolean hasFireStriker(ItemStack item) {
+	    return fireStrikerMap.containsKey(item);
+    }
+
+    public FireStriker getFireStriker(ItemStack item) {
+	    UUID uuid = getItemUUID(item);
+	    if (uuid != null && fireStrikerMap.containsKey(uuid)) {
+	        return fireStrikerMap.get(uuid);
+        }
+	    FireStriker fireStriker = FireStriker.deserialize(item);
+	    fireStrikerMap.put(fireStriker.getId(), fireStriker);
+	    return fireStriker;
+    }
+
+    public void removeFireStriker(UUID id) {
+        fireStrikerMap.remove(id);
+    }
+
+    private UUID getItemUUID(ItemStack item) {
+        NamespacedKey key = new NamespacedKey(Survival.getInstance(), "firestriker");
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            String s = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+            assert s != null;
+            s = s.replace("FireString{", "").replace("}", "");
+            String[] data = s.split(", ");
+            return UUID.fromString(data[0].split("=")[1]);
+        }
+        return null;
+    }
 
 }
