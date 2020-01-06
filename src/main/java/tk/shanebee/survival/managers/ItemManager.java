@@ -758,22 +758,4 @@ public class ItemManager {
 		return false;
 	}
 
-    /** Custom system to get UUIDs from ItemStacks
-     * @param item ItemStack to grab UUID from
-     * @return UUID of item (if not set a new UUID will be added to the item)
-     */
-	public static UUID getItemUUID(ItemStack item) {
-	    if (item.getItemMeta() == null) return null;
-	    ItemMeta meta = item.getItemMeta();
-        NamespacedKey key = new NamespacedKey(Survival.getInstance(), "uuid");
-        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-            String u = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            return UUID.fromString(u);
-        }
-        UUID uuid = UUID.randomUUID();
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, uuid.toString());
-        item.setItemMeta(meta);
-        return uuid;
-    }
-
 }
